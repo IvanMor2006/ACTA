@@ -61,6 +61,7 @@
                         <li><span class="dropdown-header fs-5" id="guestHeader">{{ user_name }}</span></li>
                         {% if user_ku %}
                             <li><a class="dropdown-item" href="{{ url_for('sp_ol.ol', ku=user_ku) }}"><i class="bi bi-person"></i> Посмотреть профиль</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.login') }}"><i class="bi bi-box-arrow-in-right"></i> Сменить аккаунт</a></li>
                             <li><a class="dropdown-item" href="{{ url_for('auth.exit') }}"><i class="bi bi-box-arrow-in-left"></i> Выйти</a></li>
                         {% else %}
                             <li><a class="dropdown-item" href="{{ url_for('auth.login') }}"><i class="bi bi-box-arrow-in-right"></i> Войти</a></li>
