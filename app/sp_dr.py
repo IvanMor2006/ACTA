@@ -4,29 +4,27 @@ from .decorators import *
 
 sp_dr_bp = Blueprint('sp_dr', __name__, url_prefix='')
 
-GET_PEOPLE_OL = '''
-    with t as (
-    select ol.ku, ol.naim,
-            max(dr.event_year) y_dr, to_char(ol.dr, 'mm-dd') md_dr
-    from sp_ol ol
-    left join sp_dr dr on dr.ku_ol = ol.ku
-    group by ol.ku
-    )
-    select * from t
-    order by
-        case when md_dr is null then 1 else 0 end
-    , case when y_dr is null then 0
-            when y_dr < extract(year from current_date) then 1 else 2 end
-    , y_dr
-    , case when md_dr >= to_char(current_date, 'mm-dd') then 0 else 1 end
-    , md_dr
-'''
-
 @sp_dr_bp.route('sp/dr')
 def sp():
     db = get_db()
     people = db.execute("select * from v_dr_info dr order by to_date(dr.cy_dr, 'DD.MM.YYYY') desc, naim").fetchall()
-    people_ol = db.execute(GET_PEOPLE_OL).fetchall()
+    people_ol = db.execute('''
+        with t as (
+        select ol.ku, ol.naim,
+                max(dr.event_year) y_dr, to_char(ol.dr, 'mm-dd') md_dr
+        from sp_ol ol
+        left join sp_dr dr on dr.ku_ol = ol.ku
+        group by ol.ku
+        )
+        select * from t
+        order by
+            case when md_dr is null then 1 else 0 end
+        , case when y_dr is null then 0
+                when y_dr < extract(year from current_date) then 1 else 2 end
+        , y_dr
+        , case when md_dr >= to_char(current_date, 'mm-dd') then 0 else 1 end
+        , md_dr
+    ''').fetchall()
     return render_template('sp/dr/sp.html', people=people, people_ol=people_ol)
 
 @sp_dr_bp.route('/sp/dr/<int:ku>')
@@ -38,9 +36,10 @@ def dr(ku):
         db.close()
         abort(404)
     pays = db.execute('select * from v_pay_info where ku_dr = %s order by pay, ol_naim', (ku,)).fetchall()
-    people_ol = db.execute(GET_PEOPLE_OL).fetchall()
+    people_ol = db.execute('select ku, naim from sp_ol where in_theater and could_pay order by naim').fetchall()
+    people_dr = db.execute("select ku, naim, cy_dr from v_dr_info order by to_date(cy_dr, 'dd.mm.yyyy') desc, naim").fetchall()
     db.close()
-    return render_template('sp/dr/dr.html', dr=dr, pays=pays, people_ol=people_ol)
+    return render_template('sp/dr/dr.html', dr=dr, pays=pays, people_ol=people_ol, people_dr=people_dr)
 
 @sp_dr_bp.route('/sp/dr/add', methods=['POST'])
 @role_required(['admin'])

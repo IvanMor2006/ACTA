@@ -9,7 +9,8 @@
                 <label for="a_pay_ol">Человек</label>
                 <select class="form-select mb-2" name="a_pay_ol" id="a_pay_ol" required>
                     {% for person in people_ol %}
-                    <option value="{{ person.ku }}|{{ person.naim | naim_rp }}">
+                    <option value="{{ person.ku }}|{{ person.naim | naim_rp }}"
+                            {% if pay_person and person.ku == pay_person.ku %} selected {% endif %}>
                         {{ person.naim }}
                     </option>
                     {% endfor %}
@@ -17,7 +18,8 @@
                 <label for="a_pay_dr">Именинник</label>
                 <select class="form-select mb-2" name="a_pay_dr" id="a_pay_dr" required>
                     {% for person in people_dr %}
-                    <option value="{{ person.ku }}|{{ person.naim | naim_rp }} {{ person.cy_dr }}">
+                    <option value="{{ person.ku }}|{{ person.naim | naim_rp }} {{ person.cy_dr }}"
+                            {% if pay_dr and person.ku == pay_dr.ku %} selected {% endif %}>
                         {{ person.naim }} {{ person.cy_dr }}
                     </option>
                     {% endfor %}

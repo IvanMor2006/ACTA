@@ -93,62 +93,74 @@
             </div>
         {% endif %}
     </div>
-    {% if (user_ku == person.ku or user_role in ('admin', 'admin_viewer')) and pays %}
-        <div class="table-responsive">
-            {% set thead %}
-                <tr>
-                    <th>Дата</th>
-                    <th>День рождения</th>
-                    <th>Оплачено</th>
-                </tr>
-            {% endset %}
-            {% set tbody %}
-                {% for pay in pays %}
-                    {% if pay.pay == 0 %}
-                        {% set clr = 'table-danger' %}
-                    {% elif pay.pay != pay.price %}
-                        {% set clr = 'table-warning' %}
-                    {% endif %}
-                    <tr {% if clr %} class={{clr}} {% endif %}>
-                        <td>{{ pay.t_t }}<br>{{ pay.t_d }}</td>
-                        <td {% if user_role in ('admin', 'admin_viewer') %}
-                                style="cursor: pointer;"
-                                {% set url = url_for('sp_dr.dr', ku=pay.ku_dr) %}
-                                onclick="window.location.href='{{url}}'"
-                            {% endif %}>
-                            {{ pay.dr_naim | naim_rp }}<br>{{ pay.cy_dr }}
-                        </td>
-                        <td>
-                            {{ pay.pay }} / {{ pay.price }}
-                            {% if user_role == 'admin' %}
-                                {% set pay_naim = 'за день рождения ' + pay.dr_naim | naim_rp + ' на ' + pay.cy_dr %}
-                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#e_pay"
-                                    data-ku="{{ pay.ku }}"
-                                    data-naim="{{ pay_naim }}"
-                                    data-pay="{{ pay.pay }}"
-                                    data-price="{{ pay.price }}">
-                                    <i class="bi bi-pencil-fill"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#d_pay"
-                                    data-ku="{{ pay.ku }}"
-                                    data-naim="{{ pay_naim }}">
-                                    <i class="bi bi-trash-fill"></i>
-                                </button>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor%}
-                <tr>
-                    <th class="text-end" colspan="2">Общий долг</th>
-                    <td>{{ person.debt }}<i class="nbrb-icon">BYN</i></td>
-                </tr>
-            {% endset %}
-            {% include 'unit/table.html' %}
-        </div>
-        {% if user_role == 'admin' %}
-            {% include 'sp/pay/edit.html' %}
-            {% include 'sp/pay/delete.html' %}
+    <div>
+        {% if person.could_pay and person.in_theater and user_role == 'admin' %}
+            <button type="button" class="mb-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#a_pay">
+                <i class="bi bi-coin"></i> Добавить долг
+            </button>
         {% endif %}
-    {% endif %}
+        {% if (user_ku == person.ku or user_role in ('admin', 'admin_viewer')) and pays %}
+            <div class="table-responsive">
+                {% set thead %}
+                    <tr>
+                        <th>Дата</th>
+                        <th>День рождения</th>
+                        <th>Оплачено</th>
+                    </tr>
+                {% endset %}
+                {% set tbody %}
+                    {% for pay in pays %}
+                        {% if pay.pay == 0 %}
+                            {% set clr = 'table-danger' %}
+                        {% elif pay.pay != pay.price %}
+                            {% set clr = 'table-warning' %}
+                        {% endif %}
+                        <tr {% if clr %} class={{clr}} {% endif %}>
+                            <td>{{ pay.t_t }}<br>{{ pay.t_d }}</td>
+                            <td {% if user_role in ('admin', 'admin_viewer') %}
+                                    style="cursor: pointer;"
+                                    {% set url = url_for('sp_dr.dr', ku=pay.ku_dr) %}
+                                    onclick="window.location.href='{{url}}'"
+                                {% endif %}>
+                                {{ pay.dr_naim | naim_rp }}<br>{{ pay.cy_dr }}
+                            </td>
+                            <td>
+                                {{ pay.pay }} / {{ pay.price }}
+                                {% if user_role == 'admin' %}
+                                    {% set pay_naim = 'за день рождения ' + pay.dr_naim | naim_rp + ' на ' + pay.cy_dr %}
+                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#e_pay"
+                                        data-ku="{{ pay.ku }}"
+                                        data-naim="{{ pay_naim }}"
+                                        data-pay="{{ pay.pay }}"
+                                        data-price="{{ pay.price }}">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#d_pay"
+                                        data-ku="{{ pay.ku }}"
+                                        data-naim="{{ pay_naim }}">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor%}
+                    <tr>
+                        <th class="text-end" colspan="2">Общий долг</th>
+                        <td>{{ person.debt }}<i class="nbrb-icon">BYN</i></td>
+                    </tr>
+                {% endset %}
+                {% include 'unit/table.html' %}
+            </div>
+            {% if user_role == 'admin' %}
+                {% set pay_person = person %}
+                {% set action_url = url_for('sp_pay.add') %}
+                {% set modal_title = 'Добавление долга' %}
+                {% include 'sp/pay/add.html' %}
+
+                {% include 'sp/pay/edit.html' %}
+                {% include 'sp/pay/delete.html' %}
+            {% endif %}
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
