@@ -9,10 +9,11 @@
     {% set modal_title = 'Добавление долга' %}
     {% include 'sp/pay/add.html.j2' %}
 {% endif %}
+<div class="overflow-x-auto d-md-flex">
 {% if pays %}
     {% for group in pays %}
         {% set first_pay = group.list[0] %}
-        <div class="table-responsive col-md-3 mb-md-4">
+        <div class="col-md-3 me-md-2 mb-md-3 mb-2">
             {% set thead %}
                 {% if first_pay.pay == 0 %}
                     {% set clr = 'table-danger' %}
@@ -42,7 +43,7 @@
                         {% set clr = 'table-warning' %}
                     {% endif %}
                     <tr {% if clr %} class={{clr}} {% endif %}>
-                        <td>{{ pay.t_t }} {{ pay.t_d }}</td>
+                        <td>{{ pay.t_t }} <br class="d-md-none">{{ pay.t_d }}</td>
                         <td {% set url = url_for('sp_ol.ol', ku=pay.ku_ol) %}
                             style="cursor: pointer;"
                             onclick="window.location.href='{{url}}'">
@@ -73,6 +74,7 @@
         </div>
     {% endfor %}
 {% endif %}
+</div>
 {% if user_role == 'admin' %}
     {% include 'sp/pay/edit.html.j2' %}
     {% include 'sp/pay/delete.html.j2' %}
