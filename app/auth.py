@@ -19,7 +19,7 @@ def login():
     db = get_db()
     people = db.execute('select * from sp_ol where tg_id is not null order by naim').fetchall()
     db.close()
-    return render_template('login.html', people=people)
+    return render_template('login.html.j2', people=people)
 
 @auth_bp.route('/login/password', methods=['POST'])
 def login_password():
@@ -51,7 +51,7 @@ def login_password():
 
 @auth_bp.route('/login/code')
 def login_code():
-    return render_template('login_code.html', code_sent=session_get(CODE_SENT))
+    return render_template('login_code.html.j2', code_sent=session_get(CODE_SENT))
 
 @auth_bp.route('/login/code/send', methods=['POST'])
 def login_code_send():

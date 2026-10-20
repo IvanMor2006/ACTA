@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.html.j2" %}
 {% block title %}Дни рождения{% endblock %}
 {% block content %}
 <div class="col-12 col-md-4">
@@ -9,7 +9,7 @@
         {% set modal_id = 'a_dr' %}
         {% set action_url = url_for('sp_dr.add') %}
         {% set dr = None %}
-        {% include 'sp/dr/add_edit.html' %}
+        {% include 'sp/dr/add_edit.html.j2' %}
     {% endif %}
 
     {% if people %}
@@ -46,7 +46,7 @@
                 </tr>
                 {% endfor %}
             {% endset %}
-            {% include 'unit/table.html' %}
+            {% include 'unit/table.html.j2' %}
         </div>
     {% endif %}
 </div>

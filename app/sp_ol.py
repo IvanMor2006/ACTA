@@ -25,7 +25,7 @@ def sp():
     roles = db.execute('select * from v_roles').fetchall()
     total_debt = db.execute('select * from f_get_debt()').fetchone()['f_get_debt']
     db.close()
-    return render_template('sp/ol/sp.html', people=people, people_arc=people_arc, roles=roles, total_debt=total_debt)
+    return render_template('sp/ol/sp.html.j2', people=people, people_arc=people_arc, roles=roles, total_debt=total_debt)
 
 @sp_ol_bp.route('/sp/ol/<int:ku>')
 @login_required
@@ -55,7 +55,7 @@ def ol(ku):
 
     db.close()
     return render_template(
-        'sp/ol/ol.html',
+        'sp/ol/ol.html.j2',
         person=person, roles=roles,
         people_dr_pay=people_dr_pay, pays=pays,
         gift_statuses=gift_statuses, gifts=gifts

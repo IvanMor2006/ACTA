@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.html.j2" %}
 {% block title %}Профиль {{ person.naim | naim_rp }}{% endblock %}
 {% block content %}
 <div class="d-md-flex justify-content-between">
@@ -33,14 +33,14 @@
                             <i class="bi bi-trash-fill"></i>
                         </button>    
                         <div class="text-start">
-                            {% include 'sp/ol/add_money.html' %}
+                            {% include 'sp/ol/add_money.html.j2' %}
 
                             {% set modal_id = 'e_ol' %}
                             {% set action_url = url_for('sp_ol.edit', ku=person.ku) %}
-                            {% include 'sp/ol/add_edit.html' %}
+                            {% include 'sp/ol/add_edit.html.j2' %}
 
                             {% set action_url = url_for('sp_ol.delete', ku=person.ku) %}
-                            {% include 'sp/delete.html' %}
+                            {% include 'sp/delete.html.j2' %}
                         </div>                        
                     </div>
                 {% endif %}
@@ -51,8 +51,8 @@
                 <i class="bi bi-gift-fill"></i> Добавить желаемый подарок
             </button>
             {% set modal_id = 'a_gift' %}
-            {% include 'sp/gift/add.html' %}
-            {% include 'sp/gift/delete.html' %}
+            {% include 'sp/gift/add.html.j2' %}
+            {% include 'sp/gift/delete.html.j2' %}
         {% endif %}
         {% if gifts %}
             <div class="row g-2">
@@ -101,11 +101,11 @@
                 </button>
                 {% set action_url = url_for('sp_pay.add') %}
                 {% set modal_title = 'Добавление долга' %}
-                {% include 'sp/pay/add.html' %}
+                {% include 'sp/pay/add.html.j2' %}
             {% endif %}
 
-            {% include 'sp/pay/edit.html' %}
-            {% include 'sp/pay/delete.html' %}
+            {% include 'sp/pay/edit.html.j2' %}
+            {% include 'sp/pay/delete.html.j2' %}
         {% endif %}
         {% if (user_ku == person.ku or user_role in ('admin', 'admin_viewer')) and pays %}
             <div class="table-responsive">
@@ -157,7 +157,7 @@
                         <td>{{ person.debt }}<i class="nbrb-icon">BYN</i></td>
                     </tr>
                 {% endset %}
-                {% include 'unit/table.html' %}
+                {% include 'unit/table.html.j2' %}
             </div>
         {% endif %}
     </div>

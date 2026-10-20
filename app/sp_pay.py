@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
+from itertools import groupby
 import datetime
 
 from .db import *
@@ -10,11 +11,15 @@ sp_pay_bp = Blueprint('sp_pay', __name__, url_prefix='')
 @role_required(['admin', 'admin_viewer'])
 def sp():
     db = get_db()
-    pays = db.execute("select * from v_pay_info pay where pay != price order by t_d desc, t_t desc").fetchall()
-    pays_done = db.execute("select * from v_pay_info pay where pay = price order by t_d desc, t_t desc").fetchall()
+    pays = db.execute("select * from v_pay_info pay order by to_date(cy_dr, 'dd.mm. ') desc, pay, ol_naim, t_d desc, t_t desc").fetchall()
+    pays_grouped = []
+    for ku_dr, group in groupby(pays, key=lambda x: x['ku_dr']):
+        pays_grouped.append({
+            'list': list(group)
+        })
     people_ol = db.execute('select ku, naim from sp_ol where in_theater and could_pay order by naim').fetchall()
     people_dr = db.execute("select ku, naim, cy_dr from v_dr_info order by to_date(cy_dr, 'dd.mm.yyyy') desc, naim").fetchall()
-    return render_template('sp/pay/sp.html', pays=pays, pays_done=pays_done, people_ol=people_ol, people_dr=people_dr)
+    return render_template('sp/pay/sp.html.j2', pays=pays_grouped, people_ol=people_ol, people_dr=people_dr)
 
 @sp_pay_bp.route('/sp/pay/add', methods=['POST'])
 @role_required(['admin'])

@@ -25,7 +25,7 @@ def sp():
         , case when md_dr >= to_char(current_date, 'mm-dd') then 0 else 1 end
         , md_dr
     ''').fetchall()
-    return render_template('sp/dr/sp.html', people=people, people_ol=people_ol)
+    return render_template('sp/dr/sp.html.j2', people=people, people_ol=people_ol)
 
 @sp_dr_bp.route('/sp/dr/<int:ku>')
 @role_required(['admin', 'admin_viewer'])
@@ -56,7 +56,7 @@ def dr(ku):
         order by ol.naim
     ''', (ku,ku)).fetchall()
     db.close()
-    return render_template('sp/dr/dr.html', dr=dr, pays=pays, people_ol=people_ol, people_ol_pay=people_ol_pay)
+    return render_template('sp/dr/dr.html.j2', dr=dr, pays=pays, people_ol=people_ol, people_ol_pay=people_ol_pay)
 
 @sp_dr_bp.route('/sp/dr/add', methods=['POST'])
 @role_required(['admin'])

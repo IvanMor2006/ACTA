@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.html.j2" %}
 {% block title %}День рождения {{dr.naim | naim_rp}}{% endblock %}
 {% block content %}
 <div class="d-md-flex justify-content-between">
@@ -23,10 +23,10 @@
                     <div class="text-start">
                         {% set modal_id = 'e_dr' %}
                         {% set action_url = url_for('sp_dr.edit', ku=dr.ku) %}
-                        {% include 'sp/dr/add_edit.html' %}
+                        {% include 'sp/dr/add_edit.html.j2' %}
                         
                         {% set action_url = url_for('sp_dr.delete', ku=dr.ku) %}
-                        {% include 'sp/delete.html' %}
+                        {% include 'sp/delete.html.j2' %}
                     </div>
                 </div>
             {% endif %}
@@ -40,11 +40,11 @@
                 </button>
                 {% set action_url = url_for('sp_pay.add') %}
                 {% set modal_title = 'Добавление долга' %}
-                {% include 'sp/pay/add.html' %}
+                {% include 'sp/pay/add.html.j2' %}
             {% endif %}
 
-            {% include 'sp/pay/edit.html' %}
-            {% include 'sp/pay/delete.html' %}
+            {% include 'sp/pay/edit.html.j2' %}
+            {% include 'sp/pay/delete.html.j2' %}
         {% endif %}
         {% if pays %}
             <div class="table-responsive">
@@ -92,7 +92,7 @@
                         </tr>
                     {% endfor%}
                 {% endset %}
-                {% include 'unit/table.html' %}
+                {% include 'unit/table.html.j2' %}
             </div>
         {% endif %}
     </div>

@@ -38,11 +38,11 @@ def create_app():
 
     @app.route('/')
     def index():
-        return render_template('index.html')
+        return render_template('index.html.j2')
 
     @app.route('/sp/card')
     @login_required
     def card():
-        return render_template('sp/card.html')
+        return render_template('sp/card.html.j2')
 
     return app

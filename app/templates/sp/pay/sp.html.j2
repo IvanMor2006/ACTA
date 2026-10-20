@@ -1,0 +1,80 @@
+{% extends "base.html.j2" %}
+{% block title %}Долги{% endblock %}
+{% block content %}
+{% if user_role == 'admin' %}
+    <button type="button" class="mb-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#a_pay">
+        <i class="bi bi-coin"></i> Добавить долг
+    </button>
+    {% set action_url = url_for('sp_pay.add') %}
+    {% set modal_title = 'Добавление долга' %}
+    {% include 'sp/pay/add.html.j2' %}
+{% endif %}
+{% if pays %}
+    {% for group in pays %}
+        {% set first_pay = group.list[0] %}
+        <div class="table-responsive col-md-3 mb-md-4">
+            {% set thead %}
+                {% if first_pay.pay == 0 %}
+                    {% set clr = 'table-danger' %}
+                {% elif first_pay.pay == first_pay.price %}
+                    {% set clr = 'table-success' %}
+                {% elif first_pay.pay != first_pay.price %}
+                    {% set clr = 'table-warning' %}
+                {% endif %}
+                <tr {% if clr %} class={{clr}} {% endif %} // + text-center
+                    style="cursor: pointer;"
+                    onclick="window.location.href='{{ url_for('sp_dr.dr', ku=first_pay.ku_dr) }}'">
+                    <th colspan="3">{{ first_pay.dr_naim }} {{ first_pay.cy_dr }}</td>
+                </tr>    
+                <tr {% if clr %} class={{clr}} {% endif %}>
+                    <th>Дата</th>
+                    <th>Человек</th>
+                    <th>Оплачено</th>
+                </tr>
+            {% endset %}
+            {% set tbody %}
+                {% for pay in group.list %}
+                    {% if pay.pay == 0 %}
+                        {% set clr = 'table-danger' %}
+                    {% elif pay.pay == pay.price %}
+                        {% set clr = 'table-success' %}
+                    {% elif pay.pay != pay.price %}
+                        {% set clr = 'table-warning' %}
+                    {% endif %}
+                    <tr {% if clr %} class={{clr}} {% endif %}>
+                        <td>{{ pay.t_t }} {{ pay.t_d }}</td>
+                        <td {% set url = url_for('sp_ol.ol', ku=pay.ku_ol) %}
+                            style="cursor: pointer;"
+                            onclick="window.location.href='{{url}}'">
+                            {{ pay.ol_naim }}
+                        </td>
+                        <td>
+                            {{ pay.pay }} / {{ pay.price }}
+                            {% if user_role == 'admin' %}
+                                {% set pay_naim = pay.ol_naim | naim_rp + ' за день рождения ' + pay.dr_naim | naim_rp + ' на ' + pay.cy_dr %}
+                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#e_pay"
+                                    data-ku="{{ pay.ku }}"
+                                    data-naim="{{ pay_naim }}"
+                                    data-pay="{{ pay.pay }}"
+                                    data-price="{{ pay.price }}">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#d_pay"
+                                    data-ku="{{ pay.ku }}"
+                                    data-naim="{{ pay_naim }}">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endset %}
+            {% include 'unit/table.html.j2' %}
+        </div>
+    {% endfor %}
+{% endif %}
+{% if user_role == 'admin' %}
+    {% include 'sp/pay/edit.html.j2' %}
+    {% include 'sp/pay/delete.html.j2' %}
+{% endif %}
+{% endblock %}

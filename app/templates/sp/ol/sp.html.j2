@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.html.j2" %}
 {% block title %}Люди{% endblock %}
 {% block content %}
 
@@ -9,16 +9,16 @@
     {% set modal_id = 'a_ol' %}
     {% set action_url = url_for('sp_ol.add') %}
     {% set person = None %}
-    {% include 'sp/ol/add_edit.html' %}
+    {% include 'sp/ol/add_edit.html.j2' %}
 {% endif %}
 
 <div class="d-md-flex gap-4">
     {% set table_title = 'Состоят в театре' %}
-    {% include 'sp/ol/table.html' %}
+    {% include 'sp/ol/table.html.j2' %}
 
     {% set table_title = 'Не состоят в театре' %}
     {% set people = people_arc %}
-    {% include 'sp/ol/table.html' %}
+    {% include 'sp/ol/table.html.j2' %}
 </div>
 
 {% if user_role in ('admin', 'admin_viewer') %}
