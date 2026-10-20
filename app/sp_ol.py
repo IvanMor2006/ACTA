@@ -36,8 +36,18 @@ def ol(ku):
     if not person:
         db.close()
         abort(404)
-    people_ol = db.execute('select ku, naim from sp_ol where in_theater and could_pay order by naim').fetchall()
-    people_dr = db.execute("select ku, naim, cy_dr from v_dr_info order by to_date(cy_dr, 'dd.mm.yyyy') desc, naim").fetchall()
+    people_dr_pay = db.execute("""
+        select dr.ku, dr.naim, dr.cy_dr 
+        from v_dr_info dr
+        where dr.ku_ol <> %s
+          and not exists(
+            select pay.*
+            from sp_pay pay
+            where pay.ku_dr = dr.ku
+              and pay.ku_ol = %s
+          )
+        order by to_date(dr.cy_dr, 'dd.mm.yyyy') desc, dr.naim
+    """, (ku,ku)).fetchall()
     pays = db.execute("select * from v_pay_info where ku_ol = %s order by to_date(cy_dr, 'DD.MM.YYYY') desc", (ku,)).fetchall()
 
     gift_statuses = db.execute('select * from v_gift_status').fetchall()
@@ -47,7 +57,7 @@ def ol(ku):
     return render_template(
         'sp/ol/ol.html',
         person=person, roles=roles,
-        people_ol=people_ol, people_dr=people_dr, pays=pays,
+        people_dr_pay=people_dr_pay, pays=pays,
         gift_statuses=gift_statuses, gifts=gifts
     )
 
@@ -123,9 +133,9 @@ def delete(ku):
     except psycopg.errors.IntegrityError as e:
         if db: db.rollback()
         if 'sp_pay_ku_ol_fkey' in str(e):
-            flash(f'У человека есть долги', 'danger')
+            flash('У человека есть долги', 'danger')
         elif 'sp_dr_ku_ol_fkey' in str(e):
-            flash(f'У человека есть дни рождения', 'danger')
+            flash('У человека есть дни рождения', 'danger')
         else:
             flash('Ошибка целостности', 'danger')
         return redirect(url_for('sp_ol.ol', ku=ku))
@@ -141,12 +151,17 @@ def delete(ku):
 def update_pay(ku):
     if session_get(USER_KU) != ku and session_get(USER_ROLE) != 'admin':
         abort(403)
-
-    db = get_db()
-    db.execute(
-        'call p_add_to_balance(cast(%s as bigint), cast(%s as numeric), cast(%s as boolean))',
-        (ku, float(request.form.get('am_ol_sum')), 'am_ol_auto_debt' in request.form)
-    )
-    db.commit()
-    db.close()
+    try:
+        db = get_db()
+        db.execute(
+            'call p_add_to_balance(cast(%s as bigint), cast(%s as numeric), cast(%s as boolean))',
+            (ku, float(request.form.get('am_ol_sum')), 'am_ol_auto_debt' in request.form)
+        )
+        db.commit()
+        db.close()
+    except psycopg.errors.CheckViolation:
+        if db: db.rollback()
+        flash('Слишком мало денег на балансе', 'danger')
+    finally:
+        if db: db.close()
     return redirect(url_for('sp_ol.ol', ku=ku))

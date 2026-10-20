@@ -19,8 +19,13 @@ def sp():
 @sp_pay_bp.route('/sp/pay/add', methods=['POST'])
 @role_required(['admin'])
 def add():
-    ku_ol, ol_naim = request.form.get('a_pay_ol').split('|', 1)
-    ku_dr, dr_naim = request.form.get('a_pay_dr').split('|', 1)
+    ref = request.referrer
+    try:
+        ku_ol, ol_naim = request.form.get('a_pay_ol').split('|', 1)
+        ku_dr, dr_naim = request.form.get('a_pay_dr').split('|', 1)
+    except AttributeError as e:
+        flash('Не указан человек или именник', 'danger')
+        return redirect(ref)
     pay = request.form.get('a_pay_pay')
 
     try:
@@ -41,12 +46,14 @@ def add():
         if db: db.rollback()
         if 'sp_pay_ol_dr_not_self' in str(e):
             flash('Нельзя добавить долг для человека на его же день рождения', 'danger')
+        elif 'sp_pay_pay_less_price' in str(e):
+            flash('Нельзя добавить долг с оплатой, большей чем прайс', 'danger')
     except Exception as e:
         if db: db.rollback()
         flash(f'Ошибка: {e}', 'danger')
     finally:
         if db: db.close()
-    return redirect(url_for('sp_pay.sp'))
+    return redirect(ref)
 
 @sp_pay_bp.route('sp/pay/edit', methods=['POST'])
 @role_required(['admin'])

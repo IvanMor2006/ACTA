@@ -36,10 +36,27 @@ def dr(ku):
         db.close()
         abort(404)
     pays = db.execute('select * from v_pay_info where ku_dr = %s order by pay, ol_naim', (ku,)).fetchall()
-    people_ol = db.execute('select ku, naim from sp_ol where in_theater and could_pay order by naim').fetchall()
-    people_dr = db.execute("select ku, naim, cy_dr from v_dr_info order by to_date(cy_dr, 'dd.mm.yyyy') desc, naim").fetchall()
+    people_ol = db.execute('select ku, naim from sp_ol where in_theater order by naim').fetchall()
+    people_ol_pay = db.execute('''
+        select ol.ku, ol.naim 
+        from sp_ol ol
+        where ol.in_theater 
+          and ol.could_pay 
+          and not exists(
+            select pay.* 
+            from sp_pay pay
+            where pay.ku_ol = ol.ku
+              and pay.ku_dr = %s
+          )
+          and ol.ku <> (
+            select dr.ku_ol
+            from sp_dr dr
+            where dr.ku = %s
+          ) 
+        order by ol.naim
+    ''', (ku,ku)).fetchall()
     db.close()
-    return render_template('sp/dr/dr.html', dr=dr, pays=pays, people_ol=people_ol, people_dr=people_dr)
+    return render_template('sp/dr/dr.html', dr=dr, pays=pays, people_ol=people_ol, people_ol_pay=people_ol_pay)
 
 @sp_dr_bp.route('/sp/dr/add', methods=['POST'])
 @role_required(['admin'])

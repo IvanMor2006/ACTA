@@ -6,24 +6,30 @@
                 <button class="btn-close" type="button" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <label for="a_pay_ol">Человек</label>
-                <select class="form-select mb-2" name="a_pay_ol" id="a_pay_ol" required>
-                    {% for person in people_ol %}
-                    <option value="{{ person.ku }}|{{ person.naim | naim_rp }}"
-                            {% if pay_person and person.ku == pay_person.ku %} selected {% endif %}>
-                        {{ person.naim }}
-                    </option>
-                    {% endfor %}
-                </select>
-                <label for="a_pay_dr">Именинник</label>
-                <select class="form-select mb-2" name="a_pay_dr" id="a_pay_dr" required>
-                    {% for person in people_dr %}
-                    <option value="{{ person.ku }}|{{ person.naim | naim_rp }} {{ person.cy_dr }}"
-                            {% if pay_dr and person.ku == pay_dr.ku %} selected {% endif %}>
-                        {{ person.naim }} {{ person.cy_dr }}
-                    </option>
-                    {% endfor %}
-                </select>
+                {% if people_ol_pay %}
+                    <label for="a_pay_ol">Человек</label>
+                    <select class="form-select mb-2" name="a_pay_ol" id="a_pay_ol" required>
+                        {% for ol in people_ol_pay %}
+                        <option value="{{ ol.ku }}|{{ ol.naim | naim_rp }}">
+                            {{ ol.naim }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                {% elif person %}
+                    <input type="hidden" name="a_pay_ol" id="a_pay_ol" value="{{ person.ku }}|" required>
+                {% endif %}
+                {% if people_dr_pay %}
+                    <label for="a_pay_dr">Именинник</label>
+                    <select class="form-select mb-2" name="a_pay_dr" id="a_pay_dr" required>
+                        {% for ol in people_dr_pay %}
+                        <option value="{{ ol.ku }}|{{ ol.naim | naim_rp }} {{ ol.cy_dr }}">
+                            {{ ol.naim }} {{ ol.cy_dr }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                {% elif dr %}
+                    <input type="hidden" name="a_pay_dr" id="a_pay_dr" value="{{ dr.ku }}|" required>
+                {% endif %}
                 <div>
                     <label for="a_pay_pay">Оплатил</label>
                     <div class="input-group">
