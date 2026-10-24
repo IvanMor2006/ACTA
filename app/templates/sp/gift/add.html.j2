@@ -48,7 +48,6 @@
                 <script>
                     const img_input = document.getElementById('{{ modal_id }}_img');
                     const img_preview = document.getElementById('{{ modal_id }}_img_preview');
-                    const img_label = document.getElementById('{{ modal_id }}_img_label');
                     const modal = document.getElementById('{{ modal_id }}');
 
                     function showImgPrewiew(file) {
@@ -57,12 +56,10 @@
                             reader.onload = function(e) {
                                 img_preview.style.backgroundImage = `url(${e.target.result})`;
                                 img_preview.classList.remove('d-none');
-                                img_label.classList.add('d-none');
                             }
                             reader.readAsDataURL(file);
                         } else {
                             img_preview.classList.add('d-none');
-                            img_label.classList.remove('d-none');
                             img_preview.style.backgroundImage = 'none';
                             img_input.value = '';
                         }
