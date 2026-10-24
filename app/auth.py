@@ -16,6 +16,10 @@ def exit():
 
 @auth_bp.route('/login')
 def login():
+    next_url = request.args.get(NEXT_URL)
+    if next_url and next_url.startswith('/'):
+        session_set(NEXT_URL, next_url)
+
     db = get_db()
     people = db.execute('select * from sp_ol where tg_id is not null order by naim').fetchall()
     db.close()
@@ -36,7 +40,8 @@ def login_password():
         if bcrypt.checkpw(password.encode(), user['password_hash'].encode()):
             session_set_user(user)
             flash('Успешный вход!', 'success')
-            return redirect(url_for('sp_ol.ol', ku=ku_ol))
+            next_url = session_pop(NEXT_URL, url_for('sp_ol.ol', ku=ku_ol))
+            return redirect(next_url)
         elif 'forgot' in request.form:
             session_set(PENDING_PASSWORD_HASH, bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode())
             session_set(CODE_SENT, False)
@@ -97,7 +102,8 @@ def login_code_verify():
             session_clear_auth()
             session_set_user(user)
             flash('Успешная регистрация!', 'success')
-            return redirect(url_for('sp_ol.ol', ku=ku_ol))
+            next_url = session_pop(NEXT_URL, url_for('sp_ol.ol', ku=ku_ol))
+            return redirect(next_url)
         else:
             db.close()
             session_clear_auth()

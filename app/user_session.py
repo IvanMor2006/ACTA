@@ -9,6 +9,8 @@ USER_KU = 'user_ku'
 USER_NAME = 'user_name'
 USER_ROLE = 'user_role'
 
+NEXT_URL = 'next_url'
+
 def session_get(name, default=None):
     return session.get(name, default)
 def session_pop(name, default=None):
