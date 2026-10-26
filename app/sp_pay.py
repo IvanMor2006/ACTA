@@ -11,7 +11,7 @@ sp_pay_bp = Blueprint('sp_pay', __name__, url_prefix='')
 @role_required(['admin', 'admin_viewer'])
 def sp():
     db = get_db()
-    pays = db.execute("select * from v_pay_info pay order by to_date(cy_dr, 'dd.mm. ') desc, pay, ol_naim, t_d desc, t_t desc").fetchall()
+    pays = db.execute("select * from v_pay_info pay order by to_date(cy_dr, 'dd.mm.yyyy') desc, pay, ol_naim, t_d desc, t_t desc").fetchall()
     pays_grouped = []
     for ku_dr, group in groupby(pays, key=lambda x: x['ku_dr']):
         pays_grouped.append({

@@ -1,5 +1,5 @@
 {% extends "base.html.j2" %}
-{% block title %}Люди{% endblock %}
+{% block title %}Актёры{% endblock %}
 {% block content %}
 
 {% if user_role == 'admin' %}
@@ -16,9 +16,11 @@
     {% set table_title = 'Состоят в театре' %}
     {% include 'sp/ol/table.html.j2' %}
 
-    {% set table_title = 'Не состоят в театре' %}
-    {% set people = people_arc %}
-    {% include 'sp/ol/table.html.j2' %}
+    {% if user_ku %}
+        {% set table_title = 'Не состоят в театре' %}
+        {% set people = people_arc %}
+        {% include 'sp/ol/table.html.j2' %}
+    {% endif %}
 </div>
 
 {% if user_role in ('admin', 'admin_viewer') %}

@@ -1,7 +1,9 @@
 {% if people %}
     <div class="col-md-{{ '5' if user_role in ('admin', 'admin_viewer') else '3' }} table-responsive">
         {% set thead %}
-            <tr><th colspan="8" class="text-center">{{ table_title }}</th></tr>
+            {% if user_ku %}
+                <tr><th colspan="8" class="text-center">{{ table_title }}</th></tr>
+            {% endif %}
             <tr>
                 <th>День<br>рождения</th>
                 <th>Возраст</th>
