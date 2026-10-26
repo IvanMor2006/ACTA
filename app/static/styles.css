@@ -89,11 +89,6 @@
 .performance-card {
     background-size: cover;
     background-position: center;
-    min-height: 225px;
-}
-
-@media (min-width: 768px) {
-    .performance-card {
-        min-height: 300px;
-    }
+    width: 100%;
+    aspect-ratio: 9 / 12;
 }

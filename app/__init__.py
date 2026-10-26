@@ -1,5 +1,6 @@
 from flask import Flask, render_template
-import dotenv, os, pymorphy3
+import dotenv, os
+dotenv.load_dotenv()
 
 from .user_session import *
 from .auth import auth_bp
@@ -7,10 +8,9 @@ from .sp_ol import sp_ol_bp
 from .sp_dr import sp_dr_bp
 from .sp_pay import sp_pay_bp
 from .sp_gift import sp_gift_bp
+from .sp_performance import sp_performance_bp
 from .db import *
 from .decorators import *
-
-dotenv.load_dotenv()
 
 def create_app():
     app = Flask(__name__)
@@ -21,6 +21,7 @@ def create_app():
     app.register_blueprint(sp_dr_bp)
     app.register_blueprint(sp_pay_bp)
     app.register_blueprint(sp_gift_bp)
+    app.register_blueprint(sp_performance_bp)
 
     @app.context_processor
     def inject_user():

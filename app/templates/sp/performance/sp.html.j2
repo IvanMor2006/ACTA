@@ -1,0 +1,37 @@
+{% extends "base.html.j2" %}
+{% block title %}Спектакли{% endblock %}
+{% block content %}
+
+{% if user_role == 'admin' %}
+    <button type="button" class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#a_performance">
+        <i class="bi bi-window-plus"></i> Добавить спектакль
+    </button>
+    {% set modal_id = 'a_performance' %}
+    {% set action_url = url_for('sp_performance.add') %}
+    {% set performance = None %}
+    {% include 'sp/performance/add_edit.html.j2' %}
+{% endif %}
+
+{% if plays %}
+    {% for group in plays  %}
+    <details class="border rounded-3 mb-3 overflow-hidden shadow-sm" open>
+        <summary class="px-4 py-2 fw-semibold text-dark bg-white border-bottom d-flex align-items-center justify-content-between" style="cursor: pointer; list-style: none;">
+            <span>{{ group.list[0].status }}</span>
+            <span class="badge bg-secondary rounded-pill fs-7">{{ group.list|length }}</span>
+        </summary>
+        <div class="row g-2 p-2">
+            {% for play in group.list %}
+                <div class="col-6 col-md-2" {# style="cursor: pointer;" #}>
+                    <div class="card performance-card"
+                        style="background-image: url({{ play.poster_url }});">
+                    </div>
+                    <h5 class="m-0">{{ play.premiere_date_str if play.premiere_date_str else 'Скоро' }}</h5>
+                    <span class="col-12" style="display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ play.naim }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </details>
+    {% endfor %}
+{% endif %}
+
+{% endblock %}
