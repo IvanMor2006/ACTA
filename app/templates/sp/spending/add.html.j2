@@ -1,0 +1,27 @@
+<div class="modal fade modal-bottom" id="a_pay" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered mt-auto">
+        <form class="modal-content" method="post" action="{{ action_url }}">
+            <div class="modal-header">
+                <h5 class="modal-title">Добавление покупки</h5>
+                <button class="btn-close" type="button" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body row">
+                <div class="col-7">
+                    <label for="a_spending_naim">Наименование</label>
+                    <input class="form-control" type="text" name="a_spending_naim" id="a_spending_naim" required>
+                </div>
+                <div class="col-5">
+                    <label for="a_spending_cost">Стоимость</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="nbrb-icon fs-4">BYN</i></span>
+                        <input class="form-control" type="number" name="a_spending_cost" id="a_spending_cost" 
+                        step="0.01" min="0.00" required>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Подтвердить</button>
+            </div>
+        </form>
+    </div>
+</div>

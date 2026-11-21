@@ -9,6 +9,7 @@ from .sp_dr import sp_dr_bp
 from .sp_pay import sp_pay_bp
 from .sp_gift import sp_gift_bp
 from .sp_performance import sp_performance_bp
+from .sp_spending import sp_spending_bp
 from .db import *
 from .decorators import *
 
@@ -22,6 +23,7 @@ def create_app():
     app.register_blueprint(sp_pay_bp)
     app.register_blueprint(sp_gift_bp)
     app.register_blueprint(sp_performance_bp)
+    app.register_blueprint(sp_spending_bp)
 
     @app.context_processor
     def inject_user():

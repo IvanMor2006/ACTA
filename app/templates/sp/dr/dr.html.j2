@@ -2,35 +2,64 @@
 {% block title %}День рождения {{dr.naim | naim_rp}}{% endblock %}
 {% block content %}
 <div class="d-md-flex justify-content-between">
-    <div class="col-md-6 text-bg-light mb-2 p-3 border rounded-3 align-self-start">
-        <div class="d-flex justify-content-between">
-            <h3 class="m-0">ДР {{ dr.naim | naim_rp }}</h3>
-            <h3 class="m-0">{{ dr.summa - dr.debt }} / {{ dr.summa }}<i class="nbrb-icon">BYN</i></h3>
-        </div>
-        <div class="d-flex justify-content-between">
-            <h5 class="fw-normal m-0">{{ dr.cy_dr }}</h5>
-            <h5 class="fw-normal">по {{ dr.price }}<i class="nbrb-icon">BYN</i></h5>
-        </div>
-        <div class="text-end">
-            {% if user_role == 'admin' %}
-                <div class="mt-auto">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#e_dr">
-                        <i class="bi bi-pencil-fill"></i>
-                    </button>
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete">
-                        <i class="bi bi-trash-fill"></i>
-                    </button>
-                    <div class="text-start">
-                        {% set modal_id = 'e_dr' %}
-                        {% set action_url = url_for('sp_dr.edit', ku=dr.ku) %}
-                        {% include 'sp/dr/add_edit.html.j2' %}
-                        
-                        {% set action_url = url_for('sp_dr.delete', ku=dr.ku) %}
-                        {% include 'sp/delete.html.j2' %}
+    <div class="col-md-6">
+        <div class="text-bg-light mb-2 p-3 border rounded-3 align-self-start">
+            <div class="d-flex justify-content-between">
+                <h3 class="m-0">ДР {{ dr.naim | naim_rp }}</h3>
+                <h3 class="m-0">{{ dr.summa - dr.debt }} / {{ dr.summa }}<i class="nbrb-icon">BYN</i></h3>
+            </div>
+            <div class="d-flex justify-content-between">
+                <h5 class="fw-normal m-0">{{ dr.cy_dr }}</h5>
+                <h5 class="fw-normal">по {{ dr.price }}<i class="nbrb-icon">BYN</i></h5>
+            </div>
+            <div class="d-flex justify-content-between">
+                <h4 class="fw-normal m-0">Осталось {{ dr.summa - dr.debt - dr.spendings }}<i class="nbrb-icon">BYN</i></h4>
+                {% if user_role == 'admin' %}
+                    <div class="mt-auto">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#e_dr">
+                            <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                        <div class="text-start">
+                            {% set modal_id = 'e_dr' %}
+                            {% set action_url = url_for('sp_dr.edit', ku=dr.ku) %}
+                            {% include 'sp/dr/add_edit.html.j2' %}
+                            
+                            {% set action_url = url_for('sp_dr.delete', ku=dr.ku) %}
+                            {% include 'sp/delete.html.j2' %}
+                        </div>
                     </div>
-                </div>
-            {% endif %}
+                {% endif %}
+            </div>
         </div>
+        {% if user_role == 'admin' %}
+            <button type="button" class="mb-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#a_pay">
+                <i class="bi bi-coin"></i> Добавить покупку
+            </button>
+            {% set action_url = url_for('sp_spending.add', ku_dr=dr.ku) %}
+            {% include 'sp/spending/add.html.j2' %}
+        {% endif %}
+        {% if spendings %}
+            <div class="table-responsive col-md-6 mb-2">
+                {% set thead %}
+                    <tr>
+                        <th scope="col">Наименование</th>
+                        <th scope="col">Стоимость</th>
+                    </tr>
+                {% endset %}
+                {% set tbody %}
+                    {% for pen in spendings %}
+                        <tr>
+                            <td>{{ pen.naim }}</td>
+                            <td>{{ pen.cost }}</td>
+                        </tr>
+                    {% endfor%}
+                {% endset %}
+                {% include 'unit/table.html.j2' %}
+            </div>
+        {% endif %}
     </div>
     <div>
         {% if user_role == 'admin' %}

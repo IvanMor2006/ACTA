@@ -3,6 +3,8 @@
 {% block content %}
 <div class="col-12 col-md-4">
     {% if user_role == 'admin' %}
+        <h3 class="fw-normal">Оставшийся бюджет: {{ budget }}<i class="nbrb-icon">BYN</i></h3>
+
         <button type="button" class="mb-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#a_dr">
             <i class="bi bi-calendar-plus-fill"></i> Добавить день рождения
         </button>
@@ -18,9 +20,10 @@
                 <tr>
                     <th>Дата</th>
                     <th>Именинник</th>
-                    {% if user_ku is not none %}
+                    {% if user_role in ('admin', 'admin_viewer') %}
                         <th>Прайс</th>
-                        <th>{{ 'Собрано' if user_role in ('admin', 'admin_viewer') else 'Цена подарка' }}</th>
+                        <th>Собрано</th>
+                        <th>Осталось</th>
                     {% endif %}
                 </tr>
             {% endset %}
@@ -33,15 +36,10 @@
                     {% endif %}>
                     <td>{{ person.cy_dr }}</td>
                     <td>{{ person.naim }}</td>
-                    {% if user_ku is not none %}
-                        <td>{{ person.price if (user_ku != person.ku_ol) or (user_role in ('admin', 'admin_viewer')) }}</td>
-                        <td>
-                        {% if user_role in ('admin', 'admin_viewer') %}
-                            {{ person.summa - person.debt }} / {{ person.summa }}
-                        {% elif user_ku == person.ku_ol %}
-                            {{ person.summa }}
-                        {% endif %}
-                        </td>
+                    {% if user_role in ('admin', 'admin_viewer') %}
+                        <td>{{ person.price }}</td>
+                        <td>{{ person.summa - person.debt }} / {{ person.summa }}</td>
+                        <td>{{ person.summa - person.debt - person.spendings }}</td>
                     {% endif %}
                 </tr>
                 {% endfor %}
