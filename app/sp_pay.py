@@ -17,9 +17,41 @@ def sp():
         pays_grouped.append({
             'list': list(group)
         })
-    people_ol = db.execute('select ku, naim from sp_ol where in_theater and could_pay order by naim').fetchall()
-    people_dr = db.execute("select ku, naim, cy_dr from v_dr_info order by to_date(cy_dr, 'dd.mm.yyyy') desc, naim").fetchall()
-    return render_template('sp/pay/sp.html.j2', pays=pays_grouped, people_ol=people_ol, people_dr=people_dr)
+    people_ol_pay = db.execute('''
+      select ol.ku, ol.naim
+      from sp_ol ol
+      where ol.in_theater
+        and ol.could_pay 
+        and exists(
+          select *
+          from sp_dr dr
+          where dr.ku_ol <> ol.ku
+            and dr.ku not in (
+              select pay.ku_dr 
+              from sp_pay pay
+              where pay.ku_ol = ol.ku
+            )
+        )
+      order by ol.naim
+    ''').fetchall()
+    people_dr_pay = db.execute("""
+      select dr.ku, dr.naim, dr.cy_dr
+      from v_dr_info dr
+      where exists (
+        select *
+        from sp_ol ol
+        where dr.ku_ol <> ol.ku
+          and ol.in_theater
+          and ol.could_pay 
+          and ol.ku not in (
+            select pay.ku_ol
+            from sp_pay pay
+            where pay.ku_dr = dr.ku
+          )
+      )
+      order by to_date(dr.cy_dr, 'dd.mm.yyyy') desc, dr.naim
+    """).fetchall()
+    return render_template('sp/pay/sp.html.j2', pays=pays_grouped, people_ol_pay=people_ol_pay, people_dr_pay=people_dr_pay)
 
 @sp_pay_bp.route('/sp/pay/add', methods=['POST'])
 @role_required(['admin'])

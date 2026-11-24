@@ -35,7 +35,7 @@
             </div>
         </div>
         {% if user_role == 'admin' %}
-            <button type="button" class="mb-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#a_pay">
+            <button type="button" class="mb-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#a_spending">
                 <i class="bi bi-coin"></i> Добавить покупку
             </button>
             {% set action_url = url_for('sp_spending.add', ku_dr=dr.ku) %}

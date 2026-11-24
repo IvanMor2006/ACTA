@@ -1,7 +1,7 @@
 {% extends "base.html.j2" %}
 {% block title %}Долги{% endblock %}
 {% block content %}
-{% if user_role == 'admin' %}
+{% if user_role == 'admin' and people_ol_pay and people_dr_pay %}
     <button type="button" class="mb-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#a_pay">
         <i class="bi bi-coin"></i> Добавить долг
     </button>
