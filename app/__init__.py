@@ -44,7 +44,6 @@ def create_app():
         return render_template('index.html.j2')
 
     @app.route('/sp/card')
-    @login_required
     def card():
         return render_template('sp/card.html.j2')
 
