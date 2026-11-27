@@ -37,7 +37,7 @@
                                      or request.path.startswith('/sp/card')
                                      or request.path.startswith('/sp/pay') %}active{% endif %}" href="#"
                                 role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-cake2-fill"></i> Дни рождения
+                                    <i class="bi bi-cake2-fill"></i> Сборы
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-dark">
                                     <li class="dropdown-item"><a class="nav-link {% if request.path.startswith('/sp/card') %}active{% endif %}" href="{{ url_for('card') }}">
@@ -120,6 +120,127 @@
             {% block content %}{% endblock %}
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-        {% block scripts %}{% endblock %}
+        {% if user_role in ('admin', 'admin_viewer') %}
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const tableGroups = new Map();
+
+                document.querySelectorAll('table').forEach((table) => {
+                    const headerRows = table.querySelectorAll('thead tr');
+                    if (headerRows.length === 0) return;
+
+                    const targetHeaderRow = headerRows[headerRows.length - 1];
+                    const headers = Array.from(targetHeaderRow.cells);
+
+                    table.querySelectorAll('td, th').forEach(cell => {
+                        const origSpan = parseInt(cell.getAttribute('colspan') || '1', 10);
+                        cell.dataset.origColspan = origSpan;
+                    });
+
+                    const colNames = headers.map((th, colIdx) => 
+                        th.innerText.replace(/\s+/g, ' ').trim() || `Столбец ${colIdx + 1}`
+                    );
+                    const groupKey = colNames.join('|');
+
+                    if (!tableGroups.has(groupKey)) {
+                        tableGroups.set(groupKey, {
+                            colNames: colNames,
+                            tables: []
+                        });
+                    }
+                    tableGroups.get(groupKey).tables.push(table);
+                });
+
+                let groupIdx = 0;
+
+                tableGroups.forEach((group, groupKey) => {
+                    const currentGroupIdx = groupIdx++;
+                    const firstTable = group.tables[0];
+
+                    const panel = document.createElement('div');
+                    panel.className = 'mb-2 p-2 border rounded bg-light d-flex flex-wrap gap-3';
+
+                    function updateGroupTables() {
+                        const checkboxes = Array.from(panel.querySelectorAll('input[type="checkbox"]'));
+                        const visibilityMap = checkboxes.map(cb => cb.checked);
+
+                        group.tables.forEach(table => {
+                            table.querySelectorAll('tr').forEach(row => {
+                                let currentVirtualCol = 0;
+
+                                Array.from(row.cells).forEach(cell => {
+                                    const span = parseInt(cell.dataset.origColspan || '1', 10);
+                                    let visibleSubCols = 0;
+
+                                    for (let i = 0; i < span; i++) {
+                                        if (visibilityMap[currentVirtualCol + i]) {
+                                            visibleSubCols++;
+                                        }
+                                    }
+
+                                    if (visibleSubCols === 0) {
+                                        cell.style.display = 'none';
+                                    } else {
+                                        cell.style.display = '';
+                                        if (span > 1) {
+                                            cell.setAttribute('colspan', visibleSubCols);
+                                        }
+                                    }
+
+                                    currentVirtualCol += span;
+                                });
+                            });
+                        });
+                    }
+
+                    group.colNames.forEach((colName, colIdx) => {
+                        const storageKey = `tbl_grp_${currentGroupIdx}_col_${colIdx}_${colName}`;
+
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'form-check form-check-inline m-0';
+
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.className = 'form-check-input';
+                        checkbox.id = `chk-grp-${currentGroupIdx}-${colIdx}`;
+                        checkbox.dataset.colIndex = colIdx;
+
+                        const saved = localStorage.getItem(storageKey);
+                        checkbox.checked = saved !== null ? (saved === 'true') : true;
+
+                        checkbox.addEventListener('change', () => {
+                            localStorage.setItem(storageKey, checkbox.checked);
+                            updateGroupTables();
+                        });
+
+                        const label = document.createElement('label');
+                        label.className = 'form-check-label small';
+                        label.htmlFor = checkbox.id;
+                        label.textContent = colName;
+
+                        wrapper.appendChild(checkbox);
+                        wrapper.appendChild(label);
+                        panel.appendChild(wrapper);
+                    });
+
+                    const insertTarget = firstTable.closest('[class*="table-responsive"]') || firstTable;
+                    const parent = insertTarget.parentElement;
+
+                    if (parent) {
+                        const isFlex = getComputedStyle(parent).display.includes('flex');
+                        if (isFlex) {
+                            parent.classList.add('flex-wrap');
+                            panel.classList.add('w-100');
+                        }
+
+                        parent.insertBefore(panel, insertTarget);
+                    }
+
+                    updateGroupTables();
+                });
+            });
+            </script>
+        {% endif %}
+
     </body>
 </html>

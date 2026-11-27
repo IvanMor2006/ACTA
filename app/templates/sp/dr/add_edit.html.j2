@@ -6,14 +6,25 @@
                 <button class="btn-close" type="button" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <label for="ae_dr_ol">Именинник</label>
-                <select class="form-select mb-3" name="ae_dr_ol" id="ae_dr_ol" required>
-                    {% for person in people_ol %}
-                    <option value="{{ person.ku }}|{{ person.naim | naim_rp }}" {% if dr.ku_ol == person.ku %} selected {% endif %}>
-                        {{ person.naim }}
-                    </option>
-                    {% endfor %}
-                </select>
+                <div class="form-check mb-2">
+                    <label for="ae_dr_is">День рождения</label>
+                    <input class="form-check-input" type="checkbox" name="ae_dr_is" id="ae_dr_is" {% if dr.ku_ol %} checked {% endif %}>
+                </div>
+                <div class="mb-3" id="ae_dr_div_naim">
+                    <label for="ae_dr_naim">Название</label>
+                    <input class="form-control" type="text" name="ae_dr_naim" id="ae_dr_naim"
+                        value="{{ dr.naim if not dr.ku_ol }}" required>
+                </div>
+                <div class="mb-3" id="ae_dr_div_ol">
+                    <label for="ae_dr_ol">Именинник</label>
+                    <select class="form-select" name="ae_dr_ol" id="ae_dr_ol" required>
+                        {% for person in people_ol %}
+                        <option value="{{ person.ku }}|{{ person.naim | naim_rp }}" {% if dr.ku_ol == person.ku %} selected {% endif %}>
+                            {{ person.naim }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
                 <div class="row mb-2">
                     <div class="col-6">
                         <label for="ae_dr_event_year">Год</label>
@@ -36,3 +47,30 @@
         </form>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const checkbox = document.getElementById('ae_dr_is');
+    const divNaim = document.getElementById('ae_dr_div_naim');
+    const divOl = document.getElementById('ae_dr_div_ol');
+    const inputNaim = document.getElementById('ae_dr_naim');
+    const selectOl = document.getElementById('ae_dr_ol');
+
+    function toggleFields() {
+        if (checkbox.checked) {
+            divNaim.classList.add('d-none');
+            divOl.classList.remove('d-none');
+            inputNaim.required = false;
+            selectOl.required = true;
+        } else {
+            divNaim.classList.remove('d-none');
+            divOl.classList.add('d-none');
+            inputNaim.required = true;
+            selectOl.required = false;
+        }
+    }
+
+    toggleFields();
+
+    checkbox.addEventListener('change', toggleFields);
+});
+</script>

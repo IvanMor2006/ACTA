@@ -1,5 +1,5 @@
 {% extends "base.html.j2" %}
-{% block title %}Дни рождения{% endblock %}
+{% block title %}Сборы{% endblock %}
 {% block content %}
 <div class="col-12 col-md-4">
     {% if user_role == 'admin' %}
@@ -34,8 +34,8 @@
                         {% set url = url_for('sp_dr.dr', ku=person.ku) %}
                         onclick="window.location.href='{{url}}'"
                     {% endif %}>
-                    <td>{{ person.cy_dr }}</td>
-                    <td>{{ person.naim }}</td>
+                    <td>{{ person.cy_dr if person.ku_ol else person.event_year }}</td>
+                    <td class="text-wrap">{{ person.naim }}</td>
                     {% if user_role in ('admin', 'admin_viewer') %}
                         <td>{{ person.price }}</td>
                         <td>{{ person.summa - person.debt }} / {{ person.summa }}</td>

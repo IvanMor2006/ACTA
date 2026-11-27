@@ -49,7 +49,7 @@ def dr(ku):
             where pay.ku_ol = ol.ku
               and pay.ku_dr = %s
           )
-          and ol.ku <> (
+          and ol.ku is distinct from (
             select dr.ku_ol
             from sp_dr dr
             where dr.ku = %s
@@ -63,16 +63,19 @@ def dr(ku):
 @sp_dr_bp.route('/sp/dr/add', methods=['POST'])
 @role_required(['admin'])
 def add():
-    ku_ol, ol_naim = request.form.get('ae_dr_ol').split('|', 1)
+    is_dr = True if request.form.get('ae_dr_is') else False
+    naim = None if is_dr else request.form.get('ae_dr_naim')
+    ku_ol, ol_naim = request.form.get('ae_dr_ol').split('|', 1) if is_dr else (None, None)
+
     event_year = request.form.get('ae_dr_event_year')
     price = request.form.get('ae_dr_price')
 
     try:
         db = get_db()
-        db.execute('insert into sp_dr (ku_ol, event_year, price) values (%s, %s, %s)',
-                   (ku_ol, event_year, price))
+        db.execute('insert into sp_dr (naim, ku_ol, event_year, price) values (%s, %s, %s, %s)',
+                   (naim, ku_ol, event_year, price))
         db.commit()
-        flash('Новый день рождения добавлен', 'success')
+        flash('Новый сбор добавлен', 'success')
     except psycopg.errors.UniqueViolation as e:
         if db: db.rollback()
         if 'sp_dr_uq' in str(e):
@@ -87,15 +90,18 @@ def add():
 @sp_dr_bp.route('sp/dr/<int:ku>/edit', methods=['POST'])
 @role_required(['admin'])
 def edit(ku):
-    ku_ol, ol_naim = request.form.get('ae_dr_ol').split('|', 1)
+    is_dr = True if request.form.get('ae_dr_is') else False
+    naim = None if is_dr else request.form.get('ae_dr_naim')
+    ku_ol, ol_naim = request.form.get('ae_dr_ol').split('|', 1) if is_dr else (None, None)
+
     event_year = request.form.get('ae_dr_event_year')
     price = request.form.get('ae_dr_price')
 
     try:
         db = get_db()
         db.execute(
-            'update sp_dr set ku_ol = %s, event_year = %s, price = %s where ku = %s',
-            (ku_ol, event_year, price, ku)
+            'update sp_dr set naim = %s, ku_ol = %s, event_year = %s, price = %s where ku = %s',
+            (naim, ku_ol, event_year, price, ku)
         )
         db.commit()
         flash('Изменено', 'success')
@@ -117,7 +123,7 @@ def delete(ku):
         db = get_db()
         db.execute('delete from sp_dr where ku = %s', (ku,))
         db.commit()
-        flash('День рождения успешно удалён', 'success')
+        flash('Сбор успешно удалён', 'success')
         return redirect(url_for('sp_dr.sp'))
     except Exception as e:
         if db: db.rollback()

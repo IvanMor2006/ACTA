@@ -1,5 +1,5 @@
 {% if people %}
-    <div class="col-md-{{ '5' if user_role in ('admin', 'admin_viewer') else '3' }} table-responsive">
+    <div class="col-md-{{ '5' if user_role in ('admin', 'admin_viewer') else '3' }} table-responsive-md">
         {% set thead %}
             {% if user_ku %}
                 <tr><th colspan="8" class="text-center">{{ table_title }}</th></tr>
@@ -10,10 +10,10 @@
                 <th>Имя</th>
                 {% if user_role in ('admin', 'admin_viewer') %}
                     <th>TG ID</th>
+                    <th>Долг</th>
+                    <th>Баланс</th>
                     <th>Роль</th>
                     <th>Пароль</th>
-                    <th>Баланс</th>
-                    <th>Долг</th>
                 {% endif %}
             </tr>
         {% endset %}
@@ -30,10 +30,10 @@
                     <td {% if person.cm_dr %} class="table-warning" {% endif %}>{{ person.naim }}</td>
                     {% if user_role in ('admin', 'admin_viewer') %}
                         <td>{{ person.tg_id if person.tg_id else '' }}</td>
+                        <td>{{ person.debt }}</td>
+                        <td>{{ person.balance }}</td>
                         <td>{{ person.role }}</td>
                         <td>{{ 'Есть' if person.password_hash else '' }}</td>
-                        <td>{{ person.balance }}</td>
-                        <td>{{ person.debt }}</td>
                     {% endif %}
                 </tr>
             {% endfor %}

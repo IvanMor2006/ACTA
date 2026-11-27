@@ -19,11 +19,15 @@
                     <input type="hidden" name="a_pay_ol" id="a_pay_ol" value="{{ person.ku }}|" required>
                 {% endif %}
                 {% if people_dr_pay %}
-                    <label for="a_pay_dr">Именинник</label>
+                    <label for="a_pay_dr">Сборы</label>
                     <select class="form-select mb-2" name="a_pay_dr" id="a_pay_dr" required>
                         {% for ol in people_dr_pay %}
                         <option value="{{ ol.ku }}|{{ ol.naim | naim_rp }} {{ ol.cy_dr }}">
-                            {{ ol.naim }} {{ ol.cy_dr }}
+                        {% if ol.ku_ol %}
+                            ДР {{ ol.naim | naim_rp }} {{ ol.cy_dr }}
+                        {% else %}
+                            {{ ol.naim }}
+                        {% endif %}
                         </option>
                         {% endfor %}
                     </select>

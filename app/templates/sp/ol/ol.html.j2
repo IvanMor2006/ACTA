@@ -112,7 +112,7 @@
                 {% set thead %}
                     <tr>
                         <th>Дата</th>
-                        <th>День рождения</th>
+                        <th>Сбор</th>
                         <th>Оплачено</th>
                     </tr>
                 {% endset %}
@@ -130,12 +130,16 @@
                                     {% set url = url_for('sp_dr.dr', ku=pay.ku_dr) %}
                                     onclick="window.location.href='{{url}}'"
                                 {% endif %}>
-                                {{ pay.dr_naim | naim_rp }}<br>{{ pay.cy_dr }}
+                                {{ 'ДР ' ~ pay.dr_naim | naim_rp if pay.dr_ku_ol else pay.dr_naim }}<br>{{ pay.cy_dr if pay.dr_ku_ol else pay.event_year }}
                             </td>
                             <td>
                                 {{ pay.pay }} / {{ pay.price }}
                                 {% if user_role == 'admin' %}
-                                    {% set pay_naim = 'за день рождения ' + pay.dr_naim | naim_rp + ' на ' + pay.cy_dr %}
+                                    {% if pay.dr_ku_ol %}
+                                        {% set pay_naim = 'за день рождения ' ~ pay.dr_naim | naim_rp ~ ' на ' ~ pay.cy_dr %}
+                                    {% else %}
+                                        {% set pay_naim = 'за ' ~ pay.dr_naim ~ ' в ' ~ pay.event_year ~ ' году' %}
+                                    {% endif %}
                                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#e_pay"
                                         data-ku="{{ pay.ku }}"
                                         data-naim="{{ pay_naim }}"

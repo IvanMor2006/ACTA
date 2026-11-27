@@ -36,9 +36,9 @@ def ol(ku):
         db.close()
         abort(404)
     people_dr_pay = db.execute("""
-        select dr.ku, dr.naim, dr.cy_dr 
+        select dr.ku, dr.naim, dr.cy_dr, dr.ku_ol 
         from v_dr_info dr
-        where dr.ku_ol <> %s
+        where dr.ku_ol is distinct from %s
           and not exists(
             select pay.*
             from sp_pay pay

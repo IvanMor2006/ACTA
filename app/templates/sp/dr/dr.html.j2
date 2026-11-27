@@ -1,19 +1,18 @@
 {% extends "base.html.j2" %}
-{% block title %}День рождения {{dr.naim | naim_rp}}{% endblock %}
+{% block title %}{{ 'День рождения ' ~ dr.naim | naim_rp if dr.ku_ol else dr.naim }}{% endblock %}
 {% block content %}
 <div class="d-md-flex justify-content-between">
     <div class="col-md-6">
         <div class="text-bg-light mb-2 p-3 border rounded-3 align-self-start">
             <div class="d-flex justify-content-between">
-                <h3 class="m-0">ДР {{ dr.naim | naim_rp }}</h3>
+                <h3 class="m-0">{{ 'ДР ' ~ dr.naim | naim_rp if dr.ku_ol else dr.naim }}</h3>
                 <h3 class="m-0">{{ dr.summa - dr.debt }} / {{ dr.summa }}<i class="nbrb-icon">BYN</i></h3>
             </div>
             <div class="d-flex justify-content-between">
-                <h5 class="fw-normal m-0">{{ dr.cy_dr }}</h5>
+                <h5 class="fw-normal m-0">{{ dr.cy_dr if dr.ku_ol else dr.event_year }}</h5>
                 <h5 class="fw-normal">по {{ dr.price }}<i class="nbrb-icon">BYN</i></h5>
             </div>
-            <div class="d-flex justify-content-between">
-                <h4 class="fw-normal m-0">Осталось {{ dr.summa - dr.debt - dr.spendings }}<i class="nbrb-icon">BYN</i></h4>
+            <div class="text-end">
                 {% if user_role == 'admin' %}
                     <div class="mt-auto">
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#e_dr">
@@ -56,6 +55,10 @@
                             <td>{{ pen.cost }}</td>
                         </tr>
                     {% endfor%}
+                    <tr>
+                        <th>Осталось</th>
+                        <td>{{ dr.summa - dr.debt - dr.spendings }}<i class="nbrb-icon">BYN</i></td>
+                    </tr>
                 {% endset %}
                 {% include 'unit/table.html.j2' %}
             </div>

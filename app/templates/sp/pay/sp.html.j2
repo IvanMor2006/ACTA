@@ -13,7 +13,7 @@
 {% if pays %}
     {% for group in pays %}
         {% set first_pay = group.list[0] %}
-        <div class="col-md-3 me-md-2 mb-md-3 mb-2">
+        <div class="col-md-3 me-md-2 mb-md-3 mb-2 table-responsive-md">
             {% set thead %}
                 {% if first_pay.pay == 0 %}
                     {% set clr = 'table-danger' %}
@@ -22,10 +22,10 @@
                 {% elif first_pay.pay != first_pay.price %}
                     {% set clr = 'table-warning' %}
                 {% endif %}
-                <tr {% if clr %} class={{clr}} {% endif %} // + text-center
+                <tr class="text-center {% if clr %}{{ clr }}{% endif %}"
                     style="cursor: pointer;"
                     onclick="window.location.href='{{ url_for('sp_dr.dr', ku=first_pay.ku_dr) }}'">
-                    <th colspan="3">{{ first_pay.dr_naim }} {{ first_pay.cy_dr }}</td>
+                    <th colspan="3">{{ 'ДР ' ~ first_pay.dr_naim | naim_rp if first_pay.dr_ku_ol else first_pay.dr_naim }} {{ first_pay.cy_dr if first_pay.dr_ku_ol else first_pay.event_year }}</td>
                 </tr>    
                 <tr {% if clr %} class={{clr}} {% endif %}>
                     <th>Дата</th>
@@ -52,7 +52,11 @@
                         <td>
                             {{ pay.pay }} / {{ pay.price }}
                             {% if user_role == 'admin' %}
-                                {% set pay_naim = pay.ol_naim | naim_rp + ' за день рождения ' + pay.dr_naim | naim_rp + ' на ' + pay.cy_dr %}
+                                {% if pay.dr_ku_ol %}
+                                    {% set pay_naim = pay.ol_naim | naim_rp ~ ' за день рождения ' ~ pay.dr_naim | naim_rp ~ ' на ' ~ pay.cy_dr %}
+                                {% else %}
+                                    {% set pay_naim = pay.ol_naim | naim_rp ~ ' за ' ~ pay.dr_naim ~ ' в ' ~ pay.event_year ~ ' году' %}
+                                {% endif %}
                                 <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#e_pay"
                                     data-ku="{{ pay.ku }}"
                                     data-naim="{{ pay_naim }}"

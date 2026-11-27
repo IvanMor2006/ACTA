@@ -35,7 +35,7 @@ def sp():
       order by ol.naim
     ''').fetchall()
     people_dr_pay = db.execute("""
-      select dr.ku, dr.naim, dr.cy_dr
+      select dr.ku, dr.naim, dr.cy_dr, dr.ku_ol
       from v_dr_info dr
       where exists (
         select *
